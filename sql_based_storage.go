@@ -47,7 +47,8 @@ func (x *SqlBasedStorage) Init(ctx context.Context) (returnError error) {
 	}()
 
 	// 创建存储锁信息需要的表
-	_, err = db.Exec(x.options.SqlProvider.CreateTableSql(ctx, x.options.TableFullName))
+	sql, params := x.options.SqlProvider.CreateTableSql(ctx, x.options.TableFullName)
+	_, err = db.ExecContext(ctx, sql, params...)
 	if err != nil {
 		return err
 	}
