@@ -41,10 +41,7 @@ func (x *Sql97Provider) DeleteWithVersionSql(ctx context.Context, tableFullName 
 }
 
 func (x *Sql97Provider) NowTimestampSql(ctx context.Context, tableFullName string) (string, []any) {
-	// 下面这个通用嘛？
-	// "SELECT UNIX_TIMESTAMP(NOW())"
-	//TODO implement me
-	panic("implement me")
+	return "SELECT UNIX_TIMESTAMP(NOW())", nil
 }
 
 func (x *Sql97Provider) SelectLockInformationJsonStringSql(ctx context.Context, tableFullName string, lockId string) (string, []any) {
