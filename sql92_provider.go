@@ -27,7 +27,7 @@ func (x *Sql92Provider) CreateTableSql(ctx context.Context, tableFullName string
 }
 
 func (x *Sql92Provider) UpdateWithVersionSql(ctx context.Context, tableFullName string, lockId string, exceptedVersion, newVersion storage.Version, lockInformation *storage.LockInformation) (string, []any) {
-	insertSql := fmt.Sprintf(`UPDATE %s SET version = ?, lock_information_json_string = ? WHERE lock_id = ? AND owner_id = ? AND version = ?`, tableFullName)
+	insertSql := fmt.Sprintf(`UPDATE %s SET version = ?, lock_information_json_string = ? WHERE lock_id = ? AND version = ?`, tableFullName)
 	return insertSql, []any{newVersion, lockInformation.ToJsonString(), lockId, lockInformation.OwnerId, exceptedVersion}
 }
 
