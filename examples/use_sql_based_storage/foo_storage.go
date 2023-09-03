@@ -34,7 +34,7 @@ func (x *FooStorage) GetName() string {
 // ------------------------------------------------- --------------------------------------------------------------------
 
 type FooSqlProvider struct {
-	sql_based_storage.Sql97Provider
+	sql_based_storage.Sql92Provider
 }
 
 var _ sql_based_storage.SqlProvider = &FooSqlProvider{}

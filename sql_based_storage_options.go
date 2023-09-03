@@ -6,14 +6,20 @@ import (
 )
 
 type SqlBasedStorageOptions struct {
-	SqlProvider       SqlProvider
+
+	// 用于提供SQL
+	SqlProvider SqlProvider
+
+	// 用于管理连接
 	ConnectionManager storage.ConnectionManager[*sql.DB]
-	TableFullName     string
+
+	// 存储锁的表的名称
+	TableFullName string
 }
 
 func NewSqlBasedStorageOptions() *SqlBasedStorageOptions {
 	return &SqlBasedStorageOptions{
-		SqlProvider:   NewSql97Provider(),
+		SqlProvider:   NewSql92Provider(),
 		TableFullName: storage.DefaultStorageTableName,
 	}
 }

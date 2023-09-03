@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// SqlBasedStorage 基于SQL实现的Storage的抽象实现
 type SqlBasedStorage struct {
 	options *SqlBasedStorageOptions
 }
@@ -152,7 +153,7 @@ func (x *SqlBasedStorage) Get(ctx context.Context, lockId string) (lockInformati
 		}
 	}()
 
-	sql, params := x.options.SqlProvider.SelectLockInformationJsonStringSql(ctx, x.options.TableFullName, lockId)
+	sql, params := x.options.SqlProvider.FindLockInformationJsonStringByIdSql(ctx, x.options.TableFullName, lockId)
 	rs, err := db.QueryContext(ctx, sql, params...)
 	if err != nil {
 		return "", err
@@ -170,6 +171,7 @@ func (x *SqlBasedStorage) Get(ctx context.Context, lockId string) (lockInformati
 	return lockInformationJsonString, nil
 }
 
+// GetTime 获取Storage实例的时间
 func (x *SqlBasedStorage) GetTime(ctx context.Context) (now time.Time, returnError error) {
 
 	db, err := x.options.ConnectionManager.Take(ctx)
@@ -205,15 +207,19 @@ func (x *SqlBasedStorage) GetTime(ctx context.Context) (now time.Time, returnErr
 		return zero, err
 	}
 
-	// TODO 时区
+	// TODO 时区，这里的时区可能会产生的问题？
+	// 1. Storage的多个实例的时区不一致
+	// 2. 锁的多个竞争者所在机器的时区不一致
 	return time.Unix(int64(databaseTimestamp), 0), nil
 }
 
+// Close 释放Storage占用的资源
 func (x *SqlBasedStorage) Close(ctx context.Context) error {
-	// 没有Storage级别的资源好回收的
+	// 没有Storage级别的资源好回收的，连接啥的都归ConnectionManager管，没自己啥事
 	return nil
 }
 
+// List 列出当前存储的所有的锁
 func (x *SqlBasedStorage) List(ctx context.Context) (iterator iterator.Iterator[*storage.LockInformation], returnError error) {
 
 	db, err := x.options.ConnectionManager.Take(ctx)
