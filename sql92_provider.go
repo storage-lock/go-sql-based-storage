@@ -21,7 +21,7 @@ func (x *Sql92Provider) CreateTableSql(ctx context.Context, tableFullName string
     lock_id VARCHAR(255) NOT NULL PRIMARY KEY,
     owner_id VARCHAR(255) NOT NULL,
     version BIGINT NOT NULL,
-    lock_information_json_string VARCHAR(255) NOT NULL
+    lock_information_json_string TEXT NOT NULL
 )`
 	return fmt.Sprintf(createTableSql, tableFullName), nil
 }
