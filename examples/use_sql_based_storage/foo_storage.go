@@ -31,6 +31,10 @@ func (x *FooStorage) GetName() string {
 	return "foo-storage"
 }
 
+func (x *FooStorage) Capabilities() []storage.StorageCapability {
+	return x.SqlBasedStorage.Capabilities()
+}
+
 // ------------------------------------------------- --------------------------------------------------------------------
 
 type FooSqlProvider struct {

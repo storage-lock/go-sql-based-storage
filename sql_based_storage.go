@@ -34,6 +34,16 @@ func (x *SqlBasedStorage) GetName() string {
 	return StorageName
 }
 
+// Capabilities 声明 SQL 存储支持的能力
+// SQL 数据库通过主键唯一约束和 WHERE 条件更新天然支持 CAS，
+// 通过数据库服务器时间（如 UNIX_TIMESTAMP(NOW())）提供相对可靠的时间源
+func (x *SqlBasedStorage) Capabilities() []storage.StorageCapability {
+	return []storage.StorageCapability{
+		storage.CapabilityCAS,
+		storage.CapabilityReliableTime,
+	}
+}
+
 func (x *SqlBasedStorage) Init(ctx context.Context) (returnError error) {
 
 	db, err := x.options.ConnectionManager.Take(ctx)

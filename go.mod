@@ -22,3 +22,5 @@ require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/storage-lock/go-storage => ../go-storage
