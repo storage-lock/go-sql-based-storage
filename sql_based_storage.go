@@ -198,7 +198,10 @@ func (x *SqlBasedStorage) GetTime(ctx context.Context) (now time.Time, returnErr
 	var zero time.Time
 	// TODO 多实例的情况下可能会有问题，允许其能够比较方便的切换到NTP TimeProvider
 	sql, params := x.options.SqlProvider.NowTimestampSql(ctx, x.options.TableFullName)
-	rs, err := db.Query(sql, params...)
+	// 漏洞修复：原用 db.Query，ctx 取消/超时不传播到查询，与同文件其它方法（ExecContext/QueryContext）
+	// 不一致。看门狗续租路径若对 GetTime 设了 ctx 超时，Query 不响应会导致续租流程卡在存储层，
+	// 间接威胁锁可用性。改为 QueryContext 让 ctx 生效。
+	rs, err := db.QueryContext(ctx, sql, params...)
 	if err != nil {
 		return zero, err
 	}
