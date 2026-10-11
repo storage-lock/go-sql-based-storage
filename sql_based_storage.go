@@ -41,6 +41,7 @@ func (x *SqlBasedStorage) Capabilities() []storage.StorageCapability {
 	return []storage.StorageCapability{
 		storage.CapabilityCAS,
 		storage.CapabilityReliableTime,
+		storage.CapabilityWatch,
 	}
 }
 
@@ -252,4 +253,8 @@ func (x *SqlBasedStorage) List(ctx context.Context) (iterator iterator.Iterator[
 		return nil, err
 	}
 	return storage.NewSqlRowsIterator(rows), nil
+}
+
+func (x *SqlBasedStorage) Watch(ctx context.Context, lockId string) (<-chan *storage.LockInformation, error) {
+	return storage.NewPollingLockWatcher(x, 500*time.Millisecond).Watch(ctx, lockId)
 }

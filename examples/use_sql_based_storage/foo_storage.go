@@ -49,15 +49,31 @@ func (x *FooSqlProvider) NowTimestampSql(ctx context.Context, tableFullName stri
 
 // ------------------------------------------------- --------------------------------------------------------------------
 
+func run(manager storage.ConnectionManager[*sql.DB]) (string, error) {
+	fooStorage, err := NewFooStorage(manager)
+	if err != nil {
+		return "", err
+	}
+	_ = fooStorage.Capabilities()
+	sqlText, args := (&FooSqlProvider{}).NowTimestampSql(context.Background(), "locks")
+	_, _ = sqlText, args
+	return fooStorage.GetName(), nil
+}
+
+func start(open func(string, string) (*sql.DB, error), driverName, dsn string) (string, error) {
+	db, err := open(driverName, dsn)
+	if err != nil {
+		return "", err
+	}
+	return run(storage.NewFixedSqlDBConnectionManager(db))
+}
+
+var openDatabase = sql.Open
+
 func main() {
-	db, err := sql.Open("mysql", "xxx")
+	name, err := start(openDatabase, "mysql", "xxx")
 	if err != nil {
 		panic(err)
 	}
-	connectionManager := storage.NewFixedSqlDBConnectionManager(db)
-	fooStorage, err := NewFooStorage(connectionManager)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(fooStorage.GetName())
+	fmt.Println(name)
 }
